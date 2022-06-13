@@ -1,0 +1,29 @@
+{
+  "twitch": {
+    "channels": [],
+    "username": "logger username or null",
+    "password": "logger password or null"
+  },
+  "reuploader": "imgur",
+  "imgur": {
+    "idRegex": "i\\.imgur\\.com\\/(\\w+\\.\\w+)",
+    "clientID": "imgur clientid"
+  },
+  "dataStorage": "mariadb",
+  "mariadb": {
+    "auth": {
+      "host": "mariadb host (incompatible with socket)",
+      "socket": "mariadb socket (incompatible with host)",
+      "port": "mariadb port",
+      "username": "mariadb user",
+      "password": "mariadb password"
+    },
+    "schema": "nuuls-to-imgur",
+    "table": "Archive",
+    "columns": {
+      "added": "Added",
+      "nuuls": "Nuuls_ID",
+      "imgur": "Imgur_ID"
+    }
+  }
+}
