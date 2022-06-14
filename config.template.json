@@ -1,8 +1,6 @@
 {
   "twitch": {
-    "channels": [],
-    "username": "logger username or null",
-    "password": "logger password or null"
+    "channels": []
   },
   "reuploader": "imgur",
   "imgur": {

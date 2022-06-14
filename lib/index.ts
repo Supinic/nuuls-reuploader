@@ -28,11 +28,7 @@ else {
     throw new Error("Unsupported logging selected");
 }
 
-const client = new DankTwitch.ChatClient({
-    username: config.twitch.username ?? undefined,
-    password: config.twitch.password ?? undefined,
-    rateLimits: "verifiedBot"
-})
+const client = new DankTwitch.ChatClient();
 
 const cache: Map<Nuuls, Upload> = new Map();
 const nuulsRegex = /i\.nuuls\.com\/(?<filename>\w+\.\w+)/g;
