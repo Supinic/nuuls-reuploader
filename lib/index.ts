@@ -46,6 +46,7 @@ client.on("PRIVMSG", async (messageData) => {
 
     for (const nuulsFile of unique) {
         const cacheExists = cache.has(nuulsFile);
+        const fileType = nuulsFile.split(".")[1] === "mp4" ? "upload" : "image";
         if (cacheExists) {
             console.log({ cacheExists });
             continue;
@@ -64,7 +65,7 @@ client.on("PRIVMSG", async (messageData) => {
         }
 
         const blob = await response.blob();
-        const reuploadResponse = await uploader.upload(blob, nuulsFile);
+        const reuploadResponse = await uploader.upload(blob, nuulsFile, fileType);
         if (reuploadResponse.link === null) {
             console.log({ cacheExists });
             continue;

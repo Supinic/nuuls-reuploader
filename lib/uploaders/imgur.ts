@@ -18,13 +18,13 @@ export class ImgurUploader extends UploaderTemplate {
         this.clientID = options.clientID;
     }
 
-    public async upload (data: Blob, file = "file") {
+    public async upload (data: Blob, file = "file", fileType = "image") {
         const formData = new FormData();
 
         // !!! FILE NAME MUST BE SET, OR THE API NEVER RESPONDS !!!
         formData.append("image", data, file);
 
-        const response = await fetch("https://api.imgur.com/3/image", {
+        const response = await fetch(`https://api.imgur.com/3/${fileType}`, {
             method: "POST",
             headers: {
                 authorization: `Client-ID ${this.clientID}`

@@ -4,5 +4,5 @@ type UploadResponse = {
 }
 
 export abstract class UploaderTemplate {
-    public abstract upload (data: Blob, file?: string): Promise<UploadResponse>;
+    public abstract upload (data: Blob, file?: string, fileType?: string): Promise<UploadResponse>;
 }
