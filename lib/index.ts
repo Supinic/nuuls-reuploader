@@ -1,5 +1,6 @@
 import config from "../config.json" assert { type: "json" };
 import { Upload, Nuuls } from "./globals";
+import { FileTypes } from "./constants.js";
 
 import * as DankTwitch from "dank-twitch-irc";
 import { MariaLogger } from "./loggers/mariadb.js";
@@ -46,41 +47,43 @@ client.on("PRIVMSG", async (messageData) => {
 
     for (const nuulsFile of unique) {
         const cacheExists = cache.has(nuulsFile);
-        const fileType = nuulsFile.split(".")[1] === "mp4" ? "upload" : "image";
-        if (cacheExists) {
-            console.log({ cacheExists });
-            continue;
-        }
-
-        const databaseRowExists = await logger.exists(nuulsFile);
-        if (databaseRowExists) {
-            console.log({ databaseRowExists });
-            continue;
-        }
-
-        const response = await fetch(`https://i.nuuls.com/${nuulsFile}`);
-        if (response.status !== 200) {
-            console.log(response.status);
-            continue;
-        }
-
-        const blob = await response.blob();
-        const reuploadResponse = await uploader.upload(blob, nuulsFile, fileType);
-        if (reuploadResponse.link === null) {
-            console.log({ cacheExists });
-            continue;
-        }
-
-        const reuploadMatch = reuploadResponse.link.match(reuploadRegex);
-        if (!reuploadMatch) {
-            console.log({ reuploadMatch, reuploadResponse });
-            continue;
-        }
-
-        const logSuccess = await logger.add(nuulsFile, reuploadMatch[1]);
-        if (logSuccess) {
-            console.log({ logSuccess });
-            cache.set(nuulsFile, reuploadResponse.link);
+        const fileType = FileTypes.filters.find(i => i.extensions.includes(nuulsFile.split(".")[1]));
+        if (fileType) {
+            if (cacheExists) {
+                console.log({ cacheExists });
+                continue;
+            }
+    
+            const databaseRowExists = await logger.exists(nuulsFile);
+            if (databaseRowExists) {
+                console.log({ databaseRowExists });
+                continue;
+            }
+    
+            const response = await fetch(`https://i.nuuls.com/${nuulsFile}`);
+            if (response.status !== 200) {
+                console.log(response.status);
+                continue;
+            }
+    
+            const blob = await response.blob();
+            const reuploadResponse = await uploader.upload(blob, nuulsFile, fileType.type);
+            if (reuploadResponse.link === null) {
+                console.log({ cacheExists });
+                continue;
+            }
+    
+            const reuploadMatch = reuploadResponse.link.match(reuploadRegex);
+            if (!reuploadMatch) {
+                console.log({ reuploadMatch, reuploadResponse });
+                continue;
+            }
+    
+            const logSuccess = await logger.add(nuulsFile, reuploadMatch[1]);
+            if (logSuccess) {
+                console.log({ logSuccess });
+                cache.set(nuulsFile, reuploadResponse.link);
+            }
         }
     }
 })
