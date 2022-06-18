@@ -2,7 +2,6 @@ import * as TwitchIRC from "https://deno.land/x/twitch_irc@0.7.1/mod.ts";
 
 import config from "./config.json" assert { type: "json" };
 import { Reupload, Nuuls } from "./src/globals.d.ts";
-import { FileTypes } from "./src/constants.ts";
 
 import { MySqlLogger } from "./src/loggers/mysql.ts";
 import { ImgurUploader } from "./src/uploaders/imgur.ts";
@@ -77,20 +76,20 @@ client.on("privmsg", async (data) => {
             continue;
         }
 
-        const headers = response.headers;
-        const blob = await response.blob();
-        const split = nuulsFile.split(".")[1];
-        if (!split) {
-            throw new Error(`No file type found for ${nuulsFile}`);
+        const contentType = response.headers.get("content-type")?.split("/")[0];
+        if (!contentType) {
+            console.log("Content-Type does not exists.");
+            continue;
         }
 
-        const fileType = FileTypes.filters.find(i => i.extensions.includes(split));
+        const headers = response.headers;
+        const blob = await response.blob();
         const reuploadResponse = await uploader.upload({
             url,
             headers,
             filename: nuulsFile,
             data: blob,
-            type: fileType.type
+            type: contentType,
         });
 
         if (reuploadResponse.link === null) {
