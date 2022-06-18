@@ -12,10 +12,9 @@
     "mariadb": "^3.0.0"
   },
   "scripts": {
-    "build": "swc lib -d dist",
-    "start": "node dist/index.js",
-    "deploy": "yarn build && yarn start",
-    "debug": "node dist/index.js --inspect:0.0.0.0:9999"
+    "start": "deno run lib/index.ts",
+    "deploy": "deno run start",
+    "debug": "deno lib/index.ts --inspect:0.0.0.0:9999"
   },
   "engines": {
     "node": ">= 18.0"
