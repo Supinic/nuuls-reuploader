@@ -1,14 +1,14 @@
 import * as TwitchIRC from "https://deno.land/x/twitch_irc@0.7.1/mod.ts";
 
-import config from "../config.json" assert { type: "json" };
-import { Reupload, Nuuls } from "./globals.d.ts";
+import config from "./config.json" assert { type: "json" };
+import { Reupload, Nuuls } from "./src/globals.d.ts";
 
-import { MySqlLogger } from "./loggers/mysql.ts";
-import { ImgurUploader } from "./uploaders/imgur.ts";
-import { CatboxMoeUploader } from "./uploaders/catbox-moe.ts";
+import { MySqlLogger } from "./src/loggers/mysql.ts";
+import { ImgurUploader } from "./src/uploaders/imgur.ts";
+import { CatboxMoeUploader } from "./src/uploaders/catbox_moe.ts";
 
-import { LoggerTemplate } from "./loggers/template.ts";
-import { UploaderTemplate } from "./uploaders/template.ts";
+import { LoggerTemplate } from "./src/loggers/template.ts";
+import { UploaderTemplate } from "./src/uploaders/template.ts";
 
 if (config.twitch.channels.length === 0) {
     throw new Error("No channels have been configured");

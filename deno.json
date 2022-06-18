@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "strict": true
+  },
+  "tasks": {
+    "run": "deno run --allow-net=localhost:3306,irc-ws.chat.twitch.tv,i.nuuls.com,catbox.moe,imgur.com main.ts",
+    "clean": "deno cache --reload main.ts",
+    "debug": "deno run --allow-net --inspect=0.0.0.0:9999 main.ts",
+    "rebuild": "deno task clean && deno task run"
+  }
+}
