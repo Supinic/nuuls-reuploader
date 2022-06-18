@@ -21,7 +21,7 @@ declare type MariaLoggerOptions = {
     columns: {
         added: string;
         nuuls: string;
-        imgur: string;
+        reupload: string;
     }
 }
 
@@ -80,9 +80,9 @@ export class MariaLogger extends LoggerTemplate {
             await this.pool.query(`
                 CREATE TABLE IF NOT EXISTS ${this.path} (                    
                     \`${this.columns.nuuls}\` VARCHAR(16) NOT NULL,
-                    \`${this.columns.imgur}\` VARCHAR(16) NOT NULL,
+                    \`${this.columns.reupload}\` VARCHAR(256) NOT NULL,
                     \`${this.columns.added}\` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-                    PRIMARY KEY (\`${this.columns.nuuls}\`, \`${this.columns.imgur}\`) USING BTREE
+                    PRIMARY KEY (\`${this.columns.nuuls}\`) USING BTREE
                 )
                 COLLATE='utf8mb4_general_ci'
                 ENGINE=InnoDB;
@@ -105,11 +105,11 @@ export class MariaLogger extends LoggerTemplate {
         return Boolean(exists);
     }
 
-    public async add (nuuls: string, imgur: string) {
+    public async add (nuuls: string, reupload: string) {
         const result = await this.pool.query(`
             INSERT INTO ${this.path}
-            (\`${this.columns.nuuls}\`, \`${this.columns.imgur}\`)
-            VALUES ('${nuuls}', '${imgur}')
+            (\`${this.columns.nuuls}\`, \`${this.columns.reupload}\`)
+            VALUES ('${nuuls}', '${reupload}')
         `) as InsertResult;
 
         return (result.affectedRows === 1);

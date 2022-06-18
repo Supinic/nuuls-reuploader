@@ -2,9 +2,8 @@
   "twitch": {
     "channels": []
   },
-  "reuploader": "imgur",
+  "reuploader": "imgur OR catbox.moe",
   "imgur": {
-    "idRegex": "i\\.imgur\\.com\\/(\\w+\\.\\w+)",
     "clientID": "imgur clientid"
   },
   "dataStorage": "mariadb",
@@ -21,7 +20,7 @@
     "columns": {
       "added": "Added",
       "nuuls": "Nuuls_ID",
-      "imgur": "Imgur_ID"
+      "reupload": "Reupload_Link"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { UploaderTemplate } from "./template.js";
+import { UploaderTemplate, UploadOptions } from "./template.js";
 
 type ImgurOptions = {
     clientID: string;
@@ -10,7 +10,7 @@ type ImgurUploadResponse = {
 };
 
 export class ImgurUploader extends UploaderTemplate {
-    private clientID: string;
+    private readonly clientID: string;
 
     public constructor (options: ImgurOptions) {
         super();
@@ -18,16 +18,17 @@ export class ImgurUploader extends UploaderTemplate {
         this.clientID = options.clientID;
     }
 
-    public async upload (data: Blob, file = "file") {
+    public async upload (options: UploadOptions) {
         const formData = new FormData();
 
         // !!! FILE NAME MUST BE SET, OR THE API NEVER RESPONDS !!!
-        formData.append("image", data, file);
+        formData.append("image", options.data, options.filename);
 
         const response = await fetch("https://api.imgur.com/3/image", {
             method: "POST",
             headers: {
-                authorization: `Client-ID ${this.clientID}`
+                authorization: `Client-ID ${this.clientID}`,
+                "content-type": options.headers.get("content-type") ?? "image/png"
             },
             body: formData
         });

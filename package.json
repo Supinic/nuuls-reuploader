@@ -14,7 +14,8 @@
   "scripts": {
     "build": "swc lib -d dist",
     "start": "node dist/index.js",
-    "deploy": "yarn build && yarn start"
+    "deploy": "yarn build && yarn start",
+    "debug": "node dist/index.js --inspect:0.0.0.0:9999"
   },
   "engines": {
     "node": ">= 18.0"
