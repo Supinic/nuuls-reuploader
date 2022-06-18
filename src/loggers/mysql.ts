@@ -38,7 +38,7 @@ export class MySqlLogger extends LoggerTemplate {
         super();
 
         this.#ready = false;
-1
+
         this.schema = options.schema;
         this.table = options.table;
         this.columns = options.columns;
