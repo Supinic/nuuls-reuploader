@@ -1,4 +1,4 @@
-import { UploaderTemplate, UploadOptions } from "./template.js";
+import { UploaderTemplate, UploadOptions } from "./template.ts";
 
 type ImgurOptions = {
     clientID: string;

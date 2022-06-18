@@ -1,21 +1,22 @@
-import config from "../config.json" assert { type: "json" };
-import { Reupload, Nuuls } from "./globals";
+import * as TwitchIRC from "https://deno.land/x/twitch_irc@0.7.1/mod.ts";
 
-import * as DankTwitch from "dank-twitch-irc";
-import { MariaLogger } from "./loggers/mariadb.js";
-import { ImgurUploader } from "./uploaders/imgur.js";
-import { CatboxMoeUploader } from "./uploaders/catbox-moe.js";
+import config from "./config.json" assert { type: "json" };
+import { Reupload, Nuuls } from "./src/globals.d.ts";
 
-import { LoggerTemplate } from "./loggers/template.js";
-import { UploaderTemplate } from "./uploaders/template.js";
+import { MySqlLogger } from "./src/loggers/mysql.ts";
+import { ImgurUploader } from "./src/uploaders/imgur.ts";
+import { CatboxMoeUploader } from "./src/uploaders/catbox_moe.ts";
+
+import { LoggerTemplate } from "./src/loggers/template.ts";
+import { UploaderTemplate } from "./src/uploaders/template.ts";
 
 if (config.twitch.channels.length === 0) {
     throw new Error("No channels have been configured");
 }
 
 let logger: LoggerTemplate;
-if (config.dataStorage === "mariadb") {
-    logger = new MariaLogger(config.mariadb);
+if (config.dataStorage === "mysql") {
+    logger = new MySqlLogger(config.mysql);
 }
 else {
     throw new Error("Unsupported data storage selected");
@@ -33,14 +34,21 @@ else {
 }
 
 // Sets up an anonymous read-only connection
-const client = new DankTwitch.ChatClient();
+const client = new TwitchIRC.Client();
 
 const cache: Map<Nuuls, Reupload> = new Map();
 const nuulsRegex = /i\.nuuls\.com\/(?<filename>\w+\.\w+)/g;
 
-client.on("PRIVMSG", async (messageData) => {
-    const { messageText } = messageData;
-    const matches = [...messageText.matchAll(nuulsRegex)];
+client.on("open", () => {
+    for (const channel of config.twitch.channels) {
+        client.join(`#${channel}`);
+    }
+});
+
+client.on("privmsg", async (data) => {
+    const { message } = data;
+
+    const matches = [...message.matchAll(nuulsRegex)];
     if (matches.length === 0) {
         return;
     }
@@ -84,19 +92,11 @@ client.on("PRIVMSG", async (messageData) => {
 
         const logSuccess = await logger.add(nuulsFile, reuploadResponse.link);
         if (logSuccess) {
-            console.log({ logSuccess });
             cache.set(nuulsFile, reuploadResponse.link);
         }
     }
-})
+});
 
 client.on("error", (err) => {
     console.warn("Twitch error", err);
-})
-
-client.on("JOIN", (data) => {
-    console.log("channel joined", data.channelName);
-})
-
-await client.connect();
-await client.joinAll(config.twitch.channels);
+});
