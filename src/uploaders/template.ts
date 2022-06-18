@@ -8,6 +8,7 @@ export type UploadOptions = {
     filename: string;
     data: Blob;
     headers: Headers;
+    type: string;
 };
 
 export abstract class UploaderTemplate {
