@@ -1,4 +1,5 @@
-import * as TwitchIRC from "https://deno.land/x/twitch_irc@0.7.1/mod.ts";
+import * as TwitchIRC from "https://deno.land/x/twitch_irc@0.10.1/mod.ts";
+import { Privmsg } from "https://deno.land/x/twitch_irc@0.10.1/lib/message/privmsg.ts";
 
 import config from "./config.json" assert { type: "json" };
 import { Reupload, Nuuls } from "./src/globals.d.ts";
@@ -45,7 +46,7 @@ client.on("open", () => {
     }
 });
 
-client.on("privmsg", async (data) => {
+client.on("privmsg", async (data: Privmsg) => {
     const { message } = data;
 
     const matches = [...message.matchAll(nuulsRegex)];
