@@ -78,7 +78,7 @@ client.on("privmsg", async (data) => {
 
         const contentType = response.headers.get("content-type")?.split("/")[0];
         if (!contentType) {
-            console.log("Content-Type does not exists.");
+            console.log("Content-Type does not exist.");
             continue;
         }
 
