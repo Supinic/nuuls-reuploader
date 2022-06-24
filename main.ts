@@ -78,13 +78,20 @@ client.on("privmsg", async (data: Privmsg) => {
             continue;
         }
 
+        const contentType = response.headers.get("content-type")?.split("/")[0];
+        if (!contentType) {
+            console.log("Content-Type does not exist.");
+            continue;
+        }
+
         const headers = response.headers;
         const blob = await response.blob();
         const reuploadResponse = await uploader.upload({
             url,
             headers,
             filename: nuulsFile,
-            data: blob
+            data: blob,
+            type: contentType,
         });
 
         if (reuploadResponse.link === null) {
