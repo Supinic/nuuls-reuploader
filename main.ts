@@ -2,7 +2,7 @@ import * as TwitchIRC from "https://deno.land/x/twitch_irc@0.10.1/mod.ts";
 import { Privmsg } from "https://deno.land/x/twitch_irc@0.10.1/lib/message/privmsg.ts";
 
 import config from "./config.json" assert { type: "json" };
-import { Reupload, Nuuls } from "./src/globals.d.ts";
+import { Nuuls } from "./src/globals.d.ts";
 
 import { MySqlLogger } from "./src/loggers/mysql.ts";
 import { ImgurUploader } from "./src/uploaders/imgur.ts";
@@ -37,7 +37,7 @@ else {
 // Sets up an anonymous read-only connection
 const client = new TwitchIRC.Client();
 
-const cache: Map<Nuuls, Reupload> = new Map();
+const cache: Set<Nuuls> = new Set();
 const nuulsRegex = /i\.nuuls\.com\/(?<filename>\w+\.\w+)/g;
 
 client.on("open", () => {
@@ -67,6 +67,7 @@ client.on("privmsg", async (data: Privmsg) => {
         const databaseRowExists = await logger.exists(nuulsFile);
         if (databaseRowExists) {
             console.log({ databaseRowExists });
+            cache.add(nuulsFile);
             continue;
         }
 
@@ -93,7 +94,7 @@ client.on("privmsg", async (data: Privmsg) => {
 
         const logSuccess = await logger.add(nuulsFile, reuploadResponse.link);
         if (logSuccess) {
-            cache.set(nuulsFile, reuploadResponse.link);
+            cache.add(nuulsFile);
         }
     }
 });
