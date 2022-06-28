@@ -38,6 +38,7 @@ else {
 const client = new TwitchIRC.Client();
 
 const cache: Set<Nuuls> = new Set();
+const processing: Set<Nuuls> = new Set();
 const nuulsRegex = /i\.nuuls\.com\/(?<filename>\w+\.\w+)/g;
 
 client.on("open", () => {
@@ -58,6 +59,12 @@ client.on("privmsg", async (data: Privmsg) => {
     const unique = new Set(files);
 
     for (const nuulsFile of unique) {
+        const beingProcessed = processing.has(nuulsFile);
+        if (beingProcessed) {
+            console.log({ beingProcessed });
+            continue;
+        }
+
         const cacheExists = cache.has(nuulsFile);
         if (cacheExists) {
             console.log({ cacheExists });
@@ -72,14 +79,18 @@ client.on("privmsg", async (data: Privmsg) => {
         }
 
         const url = `https://i.nuuls.com/${nuulsFile}`;
+        processing.add(nuulsFile);
+
         const response = await fetch(url);
         if (response.status !== 200) {
+            processing.delete(nuulsFile);
             console.log(response.status);
             continue;
         }
 
         const contentType = response.headers.get("content-type")?.split("/")[0];
         if (!contentType) {
+            processing.delete(nuulsFile);
             console.log("Content-Type does not exist.");
             continue;
         }
@@ -93,6 +104,8 @@ client.on("privmsg", async (data: Privmsg) => {
             data: blob,
             type: contentType,
         });
+
+        processing.delete(nuulsFile);
 
         if (reuploadResponse.link === null) {
             console.log({ reuploadResponse });
